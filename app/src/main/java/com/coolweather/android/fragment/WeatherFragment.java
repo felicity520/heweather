@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.coolweather.android.GSON.Weather;
 import com.coolweather.android.R;
+import com.coolweather.android.activity.MainActivity;
 import com.coolweather.android.adapter.RecyclerViewAdapter;
 import com.coolweather.android.util.HttpUtil;
 import com.google.gson.Gson;
@@ -35,6 +37,8 @@ import okhttp3.Response;
  * onDetach方法：Fragment和Activity解除关联的时候调用。
  */
 public class WeatherFragment extends Fragment {
+
+    String JSONWea;//从网络返回的数据，定义成全局变量，方便多次调用
 
     private List<String> list;
 
@@ -79,6 +83,7 @@ public class WeatherFragment extends Fragment {
 
     private void initData() {
         list = new ArrayList<>();
+//        演示getWeaFromSer还没有收到数据，view就已经加载出来了
 //        for (int i = 0; i <= 20; i++) {
 //            list.add("Item " + i);
 //        }
@@ -89,10 +94,11 @@ public class WeatherFragment extends Fragment {
         HttpUtil.sendOkHttpRequest(host, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String JSONWea = response.body().string();
+                JSONWea = response.body().string();
                 Log.i("yyy", "从服务器获取天气成功-----------: ");
                 Log.i("yyy", "JSONWea--------: " + JSONWea + "\n");
                 parseJSONWithGSON(JSONWea);
+
 
             }
 
@@ -104,7 +110,7 @@ public class WeatherFragment extends Fragment {
         });
     }
 
-    //演示git commit
+
     //方法二：使用GSON
     public void parseJSONWithGSON(String JsonData) {
         Gson gson = new Gson();
@@ -126,6 +132,13 @@ public class WeatherFragment extends Fragment {
             }
         }
     }
+
+
+
+
+
+
+
 }
 
 
