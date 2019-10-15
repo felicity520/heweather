@@ -14,8 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.coolweather.android.GSON.Weather;
 import com.coolweather.android.Interface.WeatherServices;
 import com.coolweather.android.R;
@@ -43,9 +45,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class WeatherFragment extends Fragment {
 
-    private static final int WeaData_RESULT = 1000;
-
-    String JSONWea;//从网络返回的数据，定义成全局变量，方便多次调用
+    private ImageView glideImage;
+    private View mView;
 
     private List<String> forecastList;
 
@@ -58,40 +59,31 @@ public class WeatherFragment extends Fragment {
 //    String requestWeaWeb = "https://free-api.heweather.net/s6/weather/" + weathertype + "?location=" + city_name.getText() + "&key=" + web_api_key;
 
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case WeaData_RESULT:
-                    forecastList = (List<String>) msg.obj;
-                    Log.i("yyy", "forecastList----------: " + forecastList.get(0));
-                    Log.i("yyy", "forecastList----------: " + forecastList.get(1));
-                    Log.i("yyy", "forecastList----------: " + forecastList.get(2));
-                    break;
-            }
-
-        }
-    };
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_recycler_view, container, false);
-        city_name = view.findViewById(R.id.city_name);
+        mView = inflater.inflate(R.layout.activity_recycler_view, container, false);
+        city_name = mView.findViewById(R.id.city_name);
         Log.i("yyy", "city_name.toString()-----------: " + city_name.getText());
 
-        handler.post(initRetro);
+        glideImage = mView.findViewById(R.id.glideImage);
+        getDailyImage();
 
-        //将获取到的数据加载出来
-//        initView(view);
-        return view;
+        getDataFromServer();
+
+        return mView;
+    }
+
+    private void getDailyImage() {
+        Log.i("yyy", "loading...  image");
+        String url = "http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg";
+        Glide.with(this).load(url).into(glideImage);
     }
 
 
     @Override
     public void onDetach() {
         super.onDetach();
-        handler.removeCallbacks(initRetro);
     }
 
 
@@ -110,21 +102,14 @@ public class WeatherFragment extends Fragment {
         Log.i("yyy", "view加载结束");
     }
 
-    private Runnable initRetro = new Runnable() {
-        @Override
-        public void run() {
-            getDataFromServer();
-        }
-    };
 
-
+    /**
+     * 从和风天气服务端获取数据，并显示在界面上
+     * 问题：数据还未加载完但布局已经加载完毕
+     * 解决：将view作为全局变量，等数据加载完再去加载布局，Retrofit的回调会直接回到主线程，所以没必要用handler来做线程切换
+     */
     private void getDataFromServer() {
-        final List<String> list = new ArrayList<>();
-//        演示getWeaFromSer还没有收到数据，view就已经加载出来了
-//        for (int i = 0; i <= 20; i++) {
-//            list.add("Item " + i);
-//        }
-
+        forecastList = new ArrayList<>();//别忘了创建
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://free-api.heweather.net/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -142,15 +127,15 @@ public class WeatherFragment extends Fragment {
                     List<Weather.HeWeather6Bean.DailyForecastBean> mdaily_forecast = heWealist.getDaily_forecast();
                     for (int i = 0; i <= 2; i++) {
                         mdaily_forecast.get(i);
-                        list.add("预报第" + (i + 1) + "天的数据：" + "\n" + "时间：" + mdaily_forecast.get(i).getDate() + "\n" +
+                        forecastList.add("预报第" + (i + 1) + "天的数据：" + "\n" + "时间：" + mdaily_forecast.get(i).getDate() + "\n" +
                                 "最高温：" + mdaily_forecast.get(i).getTmp_max() + "\n" +
                                 "最低温：" + mdaily_forecast.get(i).getTmp_min() + "\n" +
                                 "白天天气状况：" + mdaily_forecast.get(i).getCond_txt_d() + "\n" +
                                 "晚上天气状况：" + mdaily_forecast.get(i).getCond_txt_n() + "\n");
-                        Log.i("yyy", "list----------: " + list.get(i));
+                        Log.i("yyy", "list----------: " + forecastList.get(i));
                     }
                 }
-                handler.obtainMessage(WeaData_RESULT, list).sendToTarget();
+                initView(mView);
             }
 
             @Override
