@@ -9,6 +9,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class HttpUtil {
+
     /**
      * OkHttp GET 加载百度网页
      * 注意：9.0以上HTTP请求网页不能用明文。解决：android:usesCleartextTraffic="true"
