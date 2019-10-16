@@ -42,6 +42,7 @@ public class WebActivity extends AppCompatActivity implements View.OnClickListen
 //        initWebView();
 //        initHttpURLConnection();
 
+
     }
 
 
