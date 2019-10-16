@@ -1,5 +1,6 @@
 package com.coolweather.android.util;
 
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -27,7 +28,14 @@ public class HttpUtil {
         call.enqueue(callback);
     }
 
+    public static void sendOkHttpRequest(String address,okhttp3.Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(address).build();
+        client.newCall(request).enqueue(callback);
+    }
+
     //提交homebrach分支到master
 
 
 }
+
