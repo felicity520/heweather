@@ -20,15 +20,22 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private final String web_api_key = "b8e486f16f4d4973ae19f46872184afc";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        //这是本地homebranch分支----
         initView();
         initDate();
+        initEvent();
 
-        //getWeaFromSer();
+
+    }
+
+    private void initEvent() {
 
     }
 
@@ -39,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
 
     }
+
+
 
 
     public void getWeaFromSer() {
@@ -75,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i("yyy", "daily_forecast------------: " + heWealist.getDaily_forecast() + "\n");
         }
     }
+
 
 
 }
