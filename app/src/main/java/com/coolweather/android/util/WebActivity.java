@@ -176,6 +176,7 @@ public class WebActivity extends AppCompatActivity implements View.OnClickListen
                         String responseData = response.body().string();
                         Log.i(TAG, "onResponse: " + responseData);
                         showResponse(responseData);
+                        response.body().close();
                     }
                 });
                 break;
